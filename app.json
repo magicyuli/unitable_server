@@ -1,0 +1,7 @@
+{
+  "name": "UniTable",
+  "description": "A meal sharing App",
+  "repository": "https://github.com/tiden0614/unitable.git",
+  "logo": "http://unitable.herokuapp.com/node.svg",
+  "keywords": ["UniTable","meal sharing","host"]
+}

@@ -1,0 +1,24 @@
+{
+  "name": "UniTable",
+  "version": "0.0.1",
+  "description": "A meal sharing App",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js"
+  },
+  "dependencies": {
+    "express": "~4.9.x"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tiden0614/unitable.git"
+  },
+  "keywords": [
+    "UniTable",
+    "meal sharing",
+    "host"
+  ]
+}
