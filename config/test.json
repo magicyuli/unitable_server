@@ -1,0 +1,7 @@
+{
+	"db": "mongodb://testdba:testadmin@localhost:27017/test",
+	"emailer": {
+	   "from": "support@papers.example.com"
+	},
+	"rootURL": "http://localhost:3000"
+}

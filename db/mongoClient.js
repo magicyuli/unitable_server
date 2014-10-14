@@ -10,7 +10,6 @@ mongo.MongoClient.connect('mongodb://testdba:testadmin@localhost:27017/test',	fu
 });
 
 function insert (collection, data, callback) {
-	data._id = new mongo.ObjectID('54313724e33b3b0819907213');
 	var collection = db.collection(collection);
 	if (typeof callback === "function") {
 		collection.insert(data, {w: 1}, callback);
