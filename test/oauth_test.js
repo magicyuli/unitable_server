@@ -26,8 +26,9 @@ describe("OAuth test", function() {
 		        assert(res.body.refresh_token, 'Ensure the refresh_token was set');
 		        accessToken = res.body.access_token;
 		        refreshToken = res.body.refresh_token;
+		
+				done();
 			});
-		done();
 	});
 
 });

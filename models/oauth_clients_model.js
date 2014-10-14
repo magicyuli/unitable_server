@@ -28,11 +28,11 @@ module.exports = {
 			grantType: {$in: [grantType]}
 		}, function(err, doc) {
 			if (err) {
-				callback(err, false);
 				console.warn("client: " + clientId + "grant type" + grantType + "not allowed");
+				callback(err, false);
 			} else {
-				callback(false, true);
 				console.log("client: " + clientId + " grant type " + grantType + " allowed");
+				callback(false, true);
 			}
 		});
 	},
