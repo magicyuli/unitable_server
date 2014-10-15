@@ -19,6 +19,9 @@ module.exports = {
 		OAuthAccessTokensModel.findOne({accessToken: bearerToken}, callback);
 	},
 	saveAccessToken: function(accessToken, clientId, expires, userId, callback) {
+		if (userId.id) {
+			userId = userId.id;
+		}
 		console.log("saving" + "(accessToken: " + accessToken + ", clientId: " + clientId + ", userId: " + userId + ", expires: " + expires + ")");
 		
 		var oAuthAccessToken = new OAuthAccessTokensModel({

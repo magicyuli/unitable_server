@@ -19,7 +19,12 @@ module.exports = {
 		OAuthRefreshTokensModel.findOne({refreshToken: refreshToken}, callback);
 	},
 	saveRefreshToken: function(refreshToken, clientId, expires, userId, callback) {
+		if (userId.id) {
+			userId = userId.id;
+		}
+
 		console.log("saving" + "(refreshToken: " + refreshToken + ", clientId: " + clientId + ", userId: " + userId + ", expires: " + expires + ")");
+		
 		var oAuthRefreshToken = new OAuthRefreshTokensModel({
 			refreshToken: refreshToken,
 			clientId: clientId,
