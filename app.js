@@ -45,7 +45,7 @@ app.use(function(err, req, res, next) {
     console.error('Error:', err);
 
   if (err && err.name === 'OAuth2Error') {
-    res.status(400);
+    res.status(401);
     res.send(err.errors);
   } else {
     res.status(err.code || 500);
