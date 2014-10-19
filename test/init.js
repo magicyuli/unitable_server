@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
-var models = require('./../models');
-var UsersModel = require('./../models/users_model.js');
-var OAuthClientsModel = require('./../models/oauth_clients_model.js');
+var models = require('../models');
+var userService = require('../services/userService');
+var oAuthService = require('../services/oAuthService');
 
 var fixtures = {
   clients: [{
@@ -13,22 +13,18 @@ var fixtures = {
 
   users: [{
     email: 'test@unitable.com',
-    hashedPassword: 'testpassword'
+    // MD5 hashed password 'testpassword'
+    hashedPassword: '4WsquNEjFL9O+9YgOQbqbA=='
   }]
 };
-
-// function insertData(model, fixture, cb) {
-//   var o = new model(fixture);
-//   o.save(cb);
-// }
 
 var connection = mongoose.connection;
 
 before(function(cb) {
   connection.on('open', function() {
     connection.db.dropDatabase(function() {
-      UsersModel.saveUser(fixtures.users[0], function() {
-        OAuthClientsModel.saveClient(fixtures.clients[0], cb);
+      userService.saveUser(fixtures.users[0], function() {
+        oAuthService.saveClient(fixtures.clients[0], cb);
       });
     });
   });

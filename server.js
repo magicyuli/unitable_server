@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 var app = require('./app.js');
 var http = require('http');
 //var https = require('https');

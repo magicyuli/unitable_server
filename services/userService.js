@@ -1,21 +1,42 @@
-var mongo = require('../db/mongoClient.js');
+var mongoose = require('mongoose');
+var UsersModel = mongoose.model('Users');
+var crypto = require('crypto');
+var debug = require('debug')('dev');
 
-function addUser (data, success, error) {
-	mongo.insert('user', data, function(err, doc) {
+exports.authenticate = function(data, callback) {
+	callback = callback || function(err) {};
+	if (!(data.email && data.password)) {
+		callback(new Error('Email/Password is required'));
+		return;
+	}
+	debug('Fetching user: ' + data.email);
+	UsersModel.findOne({ email: data.email }, function(err, user) {
 		if (err) {
-			if (typeof error === 'function') {
-				error(err);
-			} else {
-				console.warn(err);
-			}
+			callback(err);
+		} else if(!user) {
+			callback(null, null, 'Cannot find user');
 		} else {
-			if (typeof success === 'function') {
-				success(doc);
+			var hash = crypto.createHash('md5').update(data.password).digest('base64');
+			if(hash !== user.hashedPassword) {
+				callback(null, null, 'Invalid password');
 			} else {
-				console.dir(doc);
+				callback(null, user, 'Success');
 			}
-		}	
+		}
 	});
-}
+};
 
-exports.addUser = addUser;
+exports.getUser = function(data, callback) {
+	exports.authenticate(data, function(err, user, message) {
+		debug(message);
+		if (err || !user) {
+			callback(err);
+		} else {
+			callback(null, user);
+		}
+	});
+};
+
+exports.saveUser = function(data, callback) {
+	new UsersModel(data).save(callback);
+};

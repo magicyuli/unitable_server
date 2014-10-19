@@ -1,6 +1,8 @@
-var config = require('./../config');
+/* Connect to Mongodb */
 var mongoose = require('mongoose');
-
+var config = require('../config');
 mongoose.connect(config.db, {});
 
-module.exports.oAuthModel = require('./oauth_models.js');
+/* Load all defined models */
+var loadModels = ['oauth', 'unitable'];
+loadModels.forEach(function(m) {require('./' + m);});

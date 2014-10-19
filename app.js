@@ -10,6 +10,8 @@ var models = require('./models');
 
 var userRouter = require('./routers/userRouter.js');
 
+var oAuthService = require('./services/oAuthService');
+
 
 app.set('env', process.env.NODE_ENV || 'development');
 app.set('port', process.env.PORT || 8086);
@@ -24,7 +26,7 @@ if (app.get('env') === 'development') {
 
 
 app.oauth = oauthserver({
-	model: models.oAuthModel,
+	model: oAuthService,
 	grants: ['password', 'refresh_token'],
 	debug: true
 });
