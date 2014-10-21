@@ -1,7 +1,7 @@
 var env = process.env.NODE_ENV || 'development';
 var config = {
-	development: require('./development.json'),
-	test: require('./test.json'),
-	product: require('./product.json')
+	development: require('./development'),
+	test: require('./test'),
+	product: require('./product')
 };
 module.exports = config[env];

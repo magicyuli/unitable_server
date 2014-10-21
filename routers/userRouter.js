@@ -1,7 +1,7 @@
 var router = require('express').Router();
-var userService = require('../services/userService.js')
+var userService = require('../services/userService')
 
-router.route('/add')
+router.route('/user/add')
 
 .all(function(req, res, next) {
 	//TODO

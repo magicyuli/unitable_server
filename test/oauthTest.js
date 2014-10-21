@@ -1,15 +1,49 @@
 var request = require('supertest');
 var assert = require('assert');
-var debug = require('debug');
+var connection = require('mongoose').connection;
 
-var app = require('./../app.js');
+var app = require('../app.js');
+var userService = require('../services/userService');
+var oauthService = require('../services/oauthService');
 
-describe("OAuth test", function() {
+var fixtures = {
+  	clients: [{
+    	clientId: 'unitableself',
+    	clientSecret: '9a5667gfn5h434df7dh8f99',
+    	redirectUri: '/oauth/redirect',
+    	grantTypes: ['password', 'refresh_token']
+  	}],
+
+  	users: [{
+    	email: 'test@unitable.com',
+    	// MD5 hashed password 'testpassword'
+    	hashedPassword: '4WsquNEjFL9O+9YgOQbqbA=='
+  	}]
+};
+
+
+describe("OAUTH TEST", function() {
 	var accessToken;
 	var refreshToken;
 	var clientId = "unitableself";
 	var clientSecret = "9a5667gfn5h434df7dh8f99";
 	var clientCredentials = new Buffer(clientId + ":" + clientSecret).toString('base64');
+
+	before(function(cb) {
+		if (connection.readyState !== 1) {
+		  	connection.on('open', onReady);
+	    } else {
+	    	onReady();
+	    }
+
+	  	function onReady () {
+		    connection.db.dropDatabase(function() {
+		      	userService.saveUser(fixtures.users[0], function() {
+		        	oauthService.saveClient(fixtures.clients[0], cb);
+		      	});
+		    });
+	  	};
+	});
 
 	it("should allow accessToken to be requested by password grant", function(done) {
 		request(app)
@@ -32,9 +66,15 @@ describe("OAuth test", function() {
 			});
 	});
 
+	it("should prevent GET method for /oauth/token", function(done) {
+		request(app)
+			.get('/oauth/token')
+			.expect(405, done);
+	});
+
 	it("should allow logged in user to view the secret page", function(done) {
 		request(app)
-			.get('/secret')
+			.get('/member')
 			.set('Authorization', 'Bearer ' + accessToken)
 			.expect(200, done);
 	});
@@ -46,8 +86,6 @@ describe("OAuth test", function() {
 			.set('Authorization', 'Basic ' + clientCredentials)
 			.send({
 				grant_type: 'refresh_token',
-				username: 'test@unitable.com',
-				password: 'testpassword',
 				refresh_token: refreshToken
 			})
 			.expect(200)
@@ -62,7 +100,7 @@ describe("OAuth test", function() {
 	});
 
 	it('should forbid access with an expired access token', function(done) {
-	    var oAuthService = require('../services/oAuthService');
+	    var oAuthService = require('../services/oauthService.js');
 	    oAuthService.getAccessToken(accessToken, function(err, token) {
 	    	oAuthService.saveAccessToken(
 	    		accessToken,
@@ -71,7 +109,7 @@ describe("OAuth test", function() {
 	    		token.userId,
 	    		function(err, doc) {
 	 					request(app)
-	 					  .get('/secret')
+	 					  .get('/member')
 	 					  .set('Authorization', 'Bearer ' + accessToken)
 	 					  .expect(401, done);
 	  		});

@@ -1,7 +1,7 @@
-var mongoose = require('mongoose');
-var UsersModel = mongoose.model('Users');
 var crypto = require('crypto');
 var debug = require('debug')('dev');
+
+var UsersModel = require('../models').UsersModel;
 
 exports.authenticate = function(data, callback) {
 	callback = callback || function(err) {};

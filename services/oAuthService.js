@@ -1,9 +1,10 @@
-var mongoose = require('mongoose');
-var OAuthRefreshTokensModel = mongoose.model('OAuthRefreshTokens');
-var OAuthAccessTokensModel = mongoose.model('OAuthAccessTokens');
-var OAuthClientsModel = mongoose.model('OAuthClients');
+var models = require('../models');
 var userService = require('./userService');
 var debug = require('debug')('dev');
+
+var OAuthRefreshTokensModel = models.OAuthRefreshTokensModel;
+var OAuthAccessTokensModel = models.OAuthAccessTokensModel;
+var OAuthClientsModel = models.OAuthClientsModel;
 
 exports.getRefreshToken =  function(refreshToken, callback){
   console.log('Get refresh token: ' + refreshToken);

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-var app = require('./app.js');
 var http = require('http');
+
+var app = require('./app');
 //var https = require('https');
 
 http.createServer(app).listen(app.get('port'), function() {

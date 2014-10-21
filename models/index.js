@@ -3,6 +3,15 @@ var mongoose = require('mongoose');
 var config = require('../config');
 mongoose.connect(config.db, {});
 
-/* Load all defined models */
-var loadModels = ['oauth', 'unitable'];
-loadModels.forEach(function(m) {require('./' + m);});
+var oauthModels = require('./oauthModels');
+var unitableModels = require('./unitableModels');
+
+module.exports = {
+	OAuthAccessTokensModel: oauthModels.OAuthAccessTokensModel,
+	OAuthRefreshTokensModel: oauthModels.OAuthRefreshTokensModel,
+	OAuthClientsModel: oauthModels.OAuthClientsModel,
+	
+	UsersModel: unitableModels.UsersModel,
+	PostsModel: unitableModels.PostsModel,
+	DishesModel: unitableModels.DishesModel
+};
