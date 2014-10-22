@@ -17,7 +17,8 @@ var fixtures = {
   	users: [{
     	email: 'test@unitable.com',
     	// MD5 hashed password 'testpassword'
-    	hashedPassword: '4WsquNEjFL9O+9YgOQbqbA=='
+    	hashedPassword: '4WsquNEjFL9O+9YgOQbqbA==',
+    	name: { first: "Lee", last: "Yu" }
   	}]
 };
 
@@ -89,7 +90,7 @@ describe("OAUTH TEST", function() {
 				refresh_token: refreshToken
 			})
 			.expect(200)
-			.end(function(req, res) {
+			.end(function(err, res) {
 				assert(res.body.access_token, "access_token wasn't set");
 				assert(res.body.refresh_token, "refresh_token wasn't set");
 				accessToken = res.body.access_token;

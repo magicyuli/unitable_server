@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 var schemas = {
     'Users': {
         email: { type: String, unique: true, required: true },
-        name: { type: String },
+        name: { type: { first: { type: String }, last: { type: String } }, required: true},
         hashedPassword: { type: String, required: true },
         passwordResetToken: { type: String, unique: true },
         resetTokenExpires: { type: Date },
@@ -13,18 +13,19 @@ var schemas = {
         address: { type: String },
         gender: { type: Number },
         avatar: { type: String },
-        guestEvents: { type: [Schema.Types.ObjectId] },
-        dishes: { type: [Schema.Types.ObjectId] }
+        guestEvents: { type: [{ type: Schema.Types.ObjectId, ref: 'Posts' }] },
+        dishes: { type: [{ type: Schema.Types.ObjectId, ref: 'Dishes' }] }
     },
     'Posts': {
         date: { type: Date, required: true },
         location: { type: String, required: true },
-        hostId: { type: Schema.Types.ObjectId, required: true },
-        guestIds: { type: [Schema.Types.ObjectId] },
-        dishes: { type: [Schema.Types.ObjectId], required: true },
+        host: { type: Schema.Types.ObjectId, required: true, ref: 'Users' },
+        guests: { type: [{ type: Schema.Types.ObjectId, ref: 'Users' }] },
+        dishes: { type: [{ type: Schema.Types.ObjectId, ref: 'Dishes' }], required: true },
         maxGuestNum: { type: Number, required: true }
     },
     'Dishes': {
+        name: { type: String, required: true },
         description: { type: String, required: true },
         pictures: { type: [String], required: true }
     }

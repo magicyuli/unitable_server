@@ -1,7 +1,10 @@
 var env = process.env.NODE_ENV || 'development';
-var config = {
+var configs = {
 	development: require('./development'),
 	test: require('./test'),
 	product: require('./product')
 };
-module.exports = config[env];
+var config = configs[env];
+module.exports = config;
+//common configs
+config['defaultEventListSize'] = 10;

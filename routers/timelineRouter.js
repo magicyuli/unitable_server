@@ -1,12 +1,22 @@
 var router = require('express').Router();
 
+var eventListService = require('../services/eventListService');
+
 router.route('/timeline')
 	.get(function(req, res, next) {
-		// param
-		res.status(200).send();
+		eventListService.getTimeline(
+			req.param('startFrom'),
+			req.param('skip'),
+			req.param('limit'),
+			req.param('orderBy'),
+			function(err, docs) {
+				if (err)
+					console.log(err);
+				else 
+					res.json(docs);
+			});
 	})
 	.post(function(req, res) {
-		// param
 		res.status(405).end();
 	});
 
