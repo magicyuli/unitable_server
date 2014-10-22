@@ -34,7 +34,7 @@ var fixtures = {
   		_id: new ObjectId('dishdishdish'),
   		name: "kon-po chicken",
     	description: "superior",
-		pictures: '4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'
+		pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO', '4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO']
   	}
 };
 

@@ -15,9 +15,13 @@ router.route('/oauth/token')
 		res.status(405).end();
 	});
 
-router.route('/member')
-	.all(oauth.authorise(), function(req, res) {
-		res.status(200).send();
+router.route('/oauth()|(/*)')
+	.all(oauth.authorise(), function(req, res, next) {
+			console.log(req.path);
+		if (req.path === '/oauth')
+			res.status(200).send();
+		else
+			next();
 	});
 
 module.exports = router;

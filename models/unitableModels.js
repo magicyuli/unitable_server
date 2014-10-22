@@ -5,7 +5,7 @@ var Schema = mongoose.Schema;
 var schemas = {
     'Users': {
         email: { type: String, unique: true, required: true },
-        name: { type: { first: { type: String }, last: { type: String } }, required: true},
+        name: { type: { first: { type: String }, last: { type: String } }, required: true },
         hashedPassword: { type: String, required: true },
         passwordResetToken: { type: String, unique: true },
         resetTokenExpires: { type: Date },
@@ -27,7 +27,8 @@ var schemas = {
     'Dishes': {
         name: { type: String, required: true },
         description: { type: String, required: true },
-        pictures: { type: [String], required: true }
+        pictures: { type: [String], required: true },
+        host: { type: Schema.Types.ObjectId }
     }
 };
 

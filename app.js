@@ -5,21 +5,23 @@ var expressErrorHandler = require('errorhandler');
 
 var routers = require('./routers');
 
-
 app.set('env', process.env.NODE_ENV || 'development');
 app.set('port', process.env.PORT || 8086);
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 app.use(morgan('dev'));
 if (app.get('env') === 'development') {
     //seems this doesn't work?
     app.use(expressErrorHandler());
 }
 
-
-app.use(routers.oauthRouter);
-app.use(routers.userRouter);
 app.use(routers.timelineRouter);
+app.use(routers.userRouter);
+// app.use('/oauth', routers.oauthRouter);
+// app.use('/oauth', routers.postRouter);
+// app.use('/oauth', routers.myEventRouter);
+app.use(routers.oauthRouter);
 app.use(routers.postRouter);
 app.use(routers.myEventRouter);
 

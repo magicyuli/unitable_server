@@ -7,7 +7,7 @@ var OAuthAccessTokensModel = models.OAuthAccessTokensModel;
 var OAuthClientsModel = models.OAuthClientsModel;
 
 exports.getRefreshToken =  function(refreshToken, callback){
-  console.log('Get refresh token: ' + refreshToken);
+  debug('Get refresh token: ' + refreshToken);
   OAuthRefreshTokensModel.findOne({ refreshToken: refreshToken }, callback);
 };
 
@@ -16,7 +16,7 @@ exports.saveRefreshToken = function(refreshToken, clientId, expires, userId, cal
     userId = userId.id;
   }
 
-  console.log("saving" + "(refreshToken: " + refreshToken + ", clientId: " + clientId + ", userId: " + userId + ", expires: " + expires + ")");
+  debug("saving" + "(refreshToken: " + refreshToken + ", clientId: " + clientId + ", userId: " + userId + ", expires: " + expires + ")");
 
   OAuthRefreshTokensModel.findOneAndUpdate(
     { refreshToken: refreshToken },
@@ -32,7 +32,7 @@ exports.saveRefreshToken = function(refreshToken, clientId, expires, userId, cal
 };
 
 exports.getAccessToken = function(bearerToken, callback) {
-  console.log("get access token: " + bearerToken);
+  debug("get access token: " + bearerToken);
 
   OAuthAccessTokensModel.findOne({ accessToken: bearerToken }, callback);
 };
@@ -41,7 +41,7 @@ exports.saveAccessToken = function(accessToken, clientId, expires, userId, callb
   if (userId.id) {
     userId = userId.id;
   }
-  console.log("saving" + "(accessToken: " + accessToken + ", clientId: " + clientId + ", userId: " + userId + ", expires: " + expires + ")");
+  debug("saving" + "(accessToken: " + accessToken + ", clientId: " + clientId + ", userId: " + userId + ", expires: " + expires + ")");
 
   OAuthAccessTokensModel.findOneAndUpdate(
     { accessToken: accessToken },
@@ -77,14 +77,12 @@ exports.grantTypeAllowed = function(clientId, grantType, callback) {
       console.warn("client: " + clientId + "grant type" + grantType + "not allowed");
       callback(err, false);
     } else {
-      console.log("client: " + clientId + " grant type " + grantType + " allowed");
+      debug("client: " + clientId + " grant type " + grantType + " allowed");
       callback(false, true);
     }
   });
 };
 
 exports.getUser = function(username, password, callback) {
-  userService.getUser({ email: username, password: password }, function(err, user) {
-    callback(err, user.email);
-  });
+  userService.getUser({ email: username, password: password }, callback);
 };

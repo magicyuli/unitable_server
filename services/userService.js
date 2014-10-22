@@ -37,6 +37,17 @@ exports.getUser = function(data, callback) {
 	});
 };
 
+exports.getUserByEmail = function(data, callback) {
+	if (!data.email) { callback(new Error('Email is required')); }
+	UsersModel.findOne({ email: data.email }, callback);
+};
+
+exports.getUserById = function(data, callback) {
+	data.id = data.id || data._id;
+	if (!data.id) { callback(new Error('Id is required')); }
+	UsersModel.findOne({ _id: data.id }, callback);
+};
+
 exports.saveUser = function(data, callback) {
 	new UsersModel(data).save(callback);
 };

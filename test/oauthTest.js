@@ -75,7 +75,7 @@ describe("OAUTH TEST", function() {
 
 	it("should allow logged in user to view the secret page", function(done) {
 		request(app)
-			.get('/member')
+			.get('/oauth')
 			.set('Authorization', 'Bearer ' + accessToken)
 			.expect(200, done);
 	});
@@ -110,7 +110,7 @@ describe("OAUTH TEST", function() {
 	    		token.userId,
 	    		function(err, doc) {
 	 					request(app)
-	 					  .get('/member')
+	 					  .get('/oauth')
 	 					  .set('Authorization', 'Bearer ' + accessToken)
 	 					  .expect(401, done);
 	  		});

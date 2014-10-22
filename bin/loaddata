@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+var config = require('../config');
+var mongoose = require('mongoose');
+var models = require('../models');
+
+var dataName = 'mock';
+if(process.argv.length > 3) {
+  console.log(process.argv);
+  dataName = process.argv[process.argv.length - 1];
+}
+
+console.log('Loading data: ' + dataName + '.js');
+var data = require('../data/' + dataName + '.js');
+
+for(var type in data) {
+  var typeData = data[type];
+  var model = mongoose.model(type);
+  typeData.forEach(function(d) {
+    (new model(d)).save(function(err, doc) {
+  	  if(err) {
+  	    console.error(err);
+  	  } else {
+  	    console.log('Inserted data: ' + doc);
+  	  }
+	  });
+  });
+};
