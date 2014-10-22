@@ -18,9 +18,6 @@ if (app.get('env') === 'development') {
 
 app.use(routers.timelineRouter);
 app.use(routers.userRouter);
-// app.use('/oauth', routers.oauthRouter);
-// app.use('/oauth', routers.postRouter);
-// app.use('/oauth', routers.myEventRouter);
 app.use(routers.oauthRouter);
 app.use(routers.postRouter);
 app.use(routers.myEventRouter);
