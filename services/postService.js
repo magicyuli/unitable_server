@@ -38,11 +38,21 @@ exports.newPost = function(data, callback) {
         { $set: { description: d.description, name: d.name, host: data.user._id } },
         { upsert: true },
         function(err, doc) {
-          if(err) { /* TODO Error handling */ }
+          if (err) { /* TODO Error handling */ }
           newpost.dishes.push(doc._id);
-          if(newpost.dishes.length == data.dishes.length) {
+          if (data.user.dishes.indexOf(doc._id) == -1) {
+            debug('pushing dish: ' + doc.name + ' into current user: ' + data.user.email);
+            data.user.dishes.push(doc._id);
+          }
+          if (newpost.dishes.length == data.dishes.length) {
             debug('saving new post');
-            newpost.save(callback);
+            newpost.save(function(err, p) {
+              if (err) {
+                callback(err);
+              } else {
+                data.user.save(callback);
+              }
+            });
           }
         }
       );

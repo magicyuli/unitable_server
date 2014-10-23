@@ -75,7 +75,7 @@ describe('Post Service Tests', function() {
 
       var dishes = [
         { name: 'Cake', description: 'a fucking cake', pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] },
-        { name: 'Oringe Juice', description: 'yummy', pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] },
+        { name: 'Orange Juice', description: 'yummy', pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] },
         { name: 'Shit', description: 'it stinks', pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] },
         { name: 'jQuery', description: '$', pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] }
       ];
@@ -100,23 +100,29 @@ describe('Post Service Tests', function() {
       dishes.forEach(function(d, i) {
         new DishModel(d).save(function(err, dish) {
 
+          user.dishes.push(dish._id);
+
           if(i >= dishes.length - 1) {
 
-            var post = { date: new Date(), location: '#701 Tower Apartments SA 5000', host: user._id, maxGuestNum: 10 };
+            user.save(function(err, user) {
 
-            var dishesToUpdate = [{ name: 'dish1', description: 'updated dish', pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO']}];
+              var post = { date: new Date(), location: '#701 Tower Apartments SA 5000', host: user._id, maxGuestNum: 10 };
 
-            DishModel.find({ host: user._id }, function(err, userdishes) {
+              var dishesToUpdate = [{ name: 'dish1', description: 'updated dish', pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO']}];
 
-              PostService.newPost({ user: user, event: post, dishes: dishesToUpdate }, function(err, newpost) {
+              DishModel.find({ host: user._id }, function(err, userdishes) {
 
-                DishModel.find({ host: user._id, name: 'dish1' }, function(err, updatedDish) {
-                  assert(updatedDish.length > 0, 'did not find dish1');
-                  assert.equal(updatedDish[0].description, 'updated dish', 'did not successfully updated');
+                PostService.newPost({ user: user, event: post, dishes: dishesToUpdate }, function(err, newpost) {
 
-                  DishModel.find({ host: user._id }, function(err, alldishes) {
-                    assert.equal(alldishes.length, userdishes.length, 'inserted extra dishes');
-                    done();
+                  DishModel.find({ host: user._id, name: 'dish1' }, function(err, updatedDish) {
+                    assert(updatedDish.length > 0, 'did not find dish1');
+                    assert.equal(updatedDish[0].description, 'updated dish', 'did not successfully updated');
+
+                    DishModel.find({ host: user._id }, function(err, alldishes) {
+                      assert.equal(alldishes.length, userdishes.length, 'inserted extra dishes');
+                      done();
+                    });
+
                   });
 
                 });
@@ -124,6 +130,7 @@ describe('Post Service Tests', function() {
               });
 
             });
+
 
           }
 
