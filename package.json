@@ -7,14 +7,16 @@
     "start": "node bin/server"
   },
   "dependencies": {
+    "body-parser": "^1.9.1",
+    "crypto": "*",
+    "debug": "*",
     "errorhandler": "^1.2.1",
     "express": "^4.9.5",
     "mongoose": "^3.8.17",
     "morgan": "^1.3.2",
     "node-oauth2-server": "^2.2.2",
-    "supertest": "^0.14.0",
-    "crypto": "*",
-    "debug": "*"
+    "nodemailer": "^1.3.0",
+    "supertest": "^0.14.0"
   },
   "engines": {
     "node": "0.10.x"

@@ -18,6 +18,7 @@ if (app.get('env') === 'development') {
 
 app.use(routers.timelineRouter);
 app.use(routers.userRouter);
+//oauth related
 app.use(routers.oauthRouter);
 app.use(routers.postRouter);
 app.use(routers.myEventRouter);

@@ -18,8 +18,8 @@ var fixtures = {
 		_id: new ObjectId('hosthosthost'),
     	email: 'test@unitable.com',
     	// MD5 hashed password 'testpassword'
-    	hashedPassword: '4WsquNEjFL9O+9YgOQbqbA==',
-    	name: { first: "Lee", last: "Yu" }
+    	password: 'testpassword',
+    	name: "Lee"
   	},
 
   	post: {

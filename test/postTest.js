@@ -24,13 +24,13 @@ var fixtures = {
   users: [
     {
       email: 'test@unitable.com',
-      hashedPassword: '4WsquNEjFL9O+9YgOQbqbA==',
-      name: { first: "Lee", last: "Yu" }
+      password: 'testpassword',
+      name: "Lee"
     },
     {
       email: 'tiden111@gmail.com',
-      hashedPassword: 'ZwsUcorZkCrsujLiL6T2vQ==',
-      name: { first: "Ying", last: "Zhang" }
+      password: '000000',
+      name: "Daryl"
     }
   ]
 };

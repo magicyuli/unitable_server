@@ -1,42 +1,39 @@
 var router = require('express').Router();
 var userService = require('../services/userService')
 
-router.route('/user/add')
-
-.all(function(req, res, next) {
-	//TODO
-	console.log("/add's all middleware");
-	next();
-})
+router.route('/register')
 
 .get(function(req, res, next) {
-	var options = {
-		root: __dirname
-	}
-	res.sendFile('test.html', options);
+	res.status(405).end();
 })
-
 .post(function(req, res, next) {
-	var data = {};
+	var user = {};
 
-	data['name'] = req.param('username');
-	data['pwd'] = req.param('password');
-	data['gender'] = req.param('gender');
-	data['phone'] = req.param('phone');
-	data['email'] = req.param('email');
+	user['email'] = req.param('email');
+	user['name'] = req.param('name');
+	user['pwd'] = req.param('password');
+	user['gender'] = req.param('gender');
+	user['avatar'] = req.param('avatar') || null;
+	user['phone'] = req.param('phone') || null;
+	user['address'] = req.param('address') || null;
+
+	try {
+		userService.checkValid(user);
+	} catch (err) {
+		res.status(400).send(err.message);
+		return;
+	}
 	
-	userService.addUser(data,
-	function(doc) {
-		//TODO
-		res.set('content-type', 'text/plain');
-		res.send(JSON.stringify(doc, null, "    "));
-		//res.json(doc);
-		res.end();
-	},
-	function(err) {
-		res.status(500).send(err);
-		res.end();
-	});
+	userService.saveUser(user,
+		function(doc) {
+			//TODO
+			res.set('content-type', 'text/plain');
+			res.send(JSON.stringify(doc, null, "    "));
+			//res.json(doc);
+		},
+		function(err) {
+			res.status(500).send(err);
+		});
 });
 
 module.exports = router;

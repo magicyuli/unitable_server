@@ -17,8 +17,9 @@ var fixtures = {
   	users: [{
     	email: 'test@unitable.com',
     	// MD5 hashed password 'testpassword'
-    	hashedPassword: '4WsquNEjFL9O+9YgOQbqbA==',
-    	name: { first: "Lee", last: "Yu" }
+    	//hashedPassword: '4WsquNEjFL9O+9YgOQbqbA==',
+    	password: 'testpassword',
+    	name: "Lee"
   	}]
 };
 
