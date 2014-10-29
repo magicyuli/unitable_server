@@ -81,6 +81,7 @@ describe("PROFILE TEST", function() {
 			.end(function(err, res) {
 				assert(res.body, "profile retrieve failed");
 				assert.equal(res.body.address, "12345 Tower KW St. SA 5000", "user profile is wrong");
+				assert(res.body.dishes, "should return dishes");
 
 				done();
 			});
@@ -95,6 +96,7 @@ describe("PROFILE TEST", function() {
 				var profile = res.body;
 				assert(profile, "profile retrieve failed");
 				assert.equal(profile.address, "12345 House SA 5000", "another user profile is wrong");
+				assert(!profile.dishes, "shouldn't return other's dishes");
 
 				done();
 			});
@@ -113,7 +115,6 @@ describe("PROFILE TEST", function() {
 			.expect(200)
 			.end(function(err, res) {
 				var profile = res.body;
-				console.log(profile);
 				assert(profile, "profile retrieve failed");
 				assert.equal(profile.address, "new address", "new address is wrong");
 				assert.equal(profile.name, "Yu", "new name is wrong");

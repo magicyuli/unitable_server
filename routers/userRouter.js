@@ -60,27 +60,25 @@ router.route('/register')
 
 router.route('/member/profile')
 	.get(function(req, res, next) {
-		var userId;
 		console.log("userRouter.js:63:GET /member/profile");
+
 		if (req.query.id) {
-			console.log("requesting profile of another user");
-			userId = req.query.id;
+			console.log("requesting profile of another user; user id " + req.query.id);
+
+			userService.getProfileById(req.query.id, function(err, doc) {
+				if (err) {
+					next(err);
+					return;
+				}
+				res.json(doc);
+			});
+		} else if (req.user.id) {
+			console.log("requesting profile of self; user id " + req.user.id);
+
+			res.json(req.user);
 		} else {
-			console.log("requesting profile of self");
-			userId = req.user.id;
+			next(new Error("can't find user id required"));	
 		}
-		if (!userId) {
-			next(new Error("user id required"));
-			return;
-		}
-		console.log("requesting profile of user id " + userId);
-		userService.getProfileById(userId, function(err, doc) {
-			if (err) {
-				next(err);
-				return;
-			}
-			res.json(doc);
-		});
 	})
 	.post(function(req, res, next) {
 		var user = {};
@@ -98,15 +96,7 @@ router.route('/member/profile')
 				next(err);
 				return;
 			}
-			res.json({
-				_id: doc._id,
-				name: doc.name,
-				phone: doc.phone,
-				address: doc.address,
-				avatar: doc.avatar,
-				email: doc.email,
-				gender: doc.gender
-			});
+			res.json(doc);
 		});
 	});
 
