@@ -75,10 +75,39 @@ router.route('/member/profile')
 		}
 		console.log("requesting profile of user id " + userId);
 		userService.getProfileById(userId, function(err, doc) {
-			if (err) next(err);
+			if (err) {
+				next(err);
+				return;
+			}
 			res.json(doc);
 		});
 	})
-	.post();
+	.post(function(req, res, next) {
+		var user = {};
+		if (!req.user.id) {
+			next(new Error("can't find user"));
+			return;
+		}
+		user['id'] = req.user.id;
+		req.body.name && (user['name'] = req.body.name);
+		req.body.avatar && (user['avatar'] = req.body.avatar);
+		req.body.phone && (user['phone'] = req.body.phone);
+		req.body.address && (user['address'] = req.body.address);
+		userService.updateUserById(user, function(err, doc) {
+			if (err) {
+				next(err);
+				return;
+			}
+			res.json({
+				_id: doc._id,
+				name: doc.name,
+				phone: doc.phone,
+				address: doc.address,
+				avatar: doc.avatar,
+				email: doc.email,
+				gender: doc.gender
+			});
+		});
+	});
 
 module.exports = router;

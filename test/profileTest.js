@@ -93,9 +93,31 @@ describe("PROFILE TEST", function() {
 			.expect(200)
 			.end(function(err, res) {
 				var profile = res.body;
-				console.log(profile);
 				assert(profile, "profile retrieve failed");
 				assert.equal(profile.address, "12345 House SA 5000", "another user profile is wrong");
+
+				done();
+			});
+	});
+
+	it("should update self profile and return the new profile", function(done) {
+		request(app)
+			.post('/member/profile')
+			.set('Authorization', 'Bearer ' + accessToken)
+			.type('form')
+			.send({
+				name: "Yu",
+				phone: "0123456789",
+				address: "new address"
+			})
+			.expect(200)
+			.end(function(err, res) {
+				var profile = res.body;
+				console.log(profile);
+				assert(profile, "profile retrieve failed");
+				assert.equal(profile.address, "new address", "new address is wrong");
+				assert.equal(profile.name, "Yu", "new name is wrong");
+				assert.equal(profile.phone, "0123456789", "new phone is wrong");
 
 				done();
 			});

@@ -81,9 +81,17 @@ exports.saveUser = function(data, callback) {
 	new UsersModel(data).save(callback);
 };
 
+exports.updateUserById = function(data, callback) {
+	if (!data.id) {
+		callback(new Error("can't find user id tp update user"));
+		return;
+	}
+	UsersModel.findOneAndUpdate({ _id: data.id }, data, callback);
+};
+
 exports.getProfileById = function(userId, callback) {
 	if (!userId) {
-		callback(new Error("can't find user id"));
+		callback(new Error("can't find user id to get profile"));
 		return;
 	}
 	UsersModel.findOne({ _id: userId }, '_id name email gender address phone avatar', callback);
