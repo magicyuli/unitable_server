@@ -141,4 +141,11 @@ describe("PERSONAL TIMELINE TEST", function() {
 			});
 	});
 
+	it("should return 400 for neither guest nor host", function(done) {
+		request(app)
+			.get('/member/timeline/police')
+			.set('Authorization', 'Bearer ' + hostAccessToken)
+			.expect(400, done);
+	});
+
 });

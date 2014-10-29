@@ -10,7 +10,7 @@ var fnMapper = {
 router.route('/member/timeline/:type')
 	.get(function(req, res, next) {
 		var type = req.params.type;
-		if (!type in ['host', 'guest']) {
+		if (type !== 'host' && type !== 'guest') {
 			res.status(400).send(type + " is not a valid type");
 			return;
 		}
