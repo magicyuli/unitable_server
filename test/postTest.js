@@ -4,6 +4,7 @@ var debug = require('debug');
 var app = require('../app');
 var connection = require('mongoose').connection;
 
+var config = require('../config');
 var PostService = require('../services/postService');
 var userService = require('../services/userService');
 var oAuthService = require('../services/oauthService');
@@ -14,8 +15,8 @@ var UserModel = models.UsersModel;
 var fixtures = {
   clients: [
     {
-      clientId: 'unitableself',
-      clientSecret: '9a5667gfn5h434df7dh8f99',
+      clientId: config.clientId,
+      clientSecret: config.clientSecret,
       redirectUri: '/oauth/redirect',
       grantTypes: ['password', 'refresh_token']
     }
@@ -25,12 +26,14 @@ var fixtures = {
     {
       email: 'test@unitable.com',
       password: 'testpassword',
-      name: "Lee"
+      name: "Lee",
+      gender: 1
     },
     {
       email: 'tiden111@gmail.com',
       password: '000000',
-      name: "Daryl"
+      name: "Daryl",
+      gender: 1
     }
   ]
 };
@@ -120,7 +123,10 @@ describe('Post Service Tests', function() {
 
                     DishModel.find({ host: user._id }, function(err, alldishes) {
                       assert.equal(alldishes.length, userdishes.length, 'inserted extra dishes');
-                      done();
+                      UserModel.findOne({ email: 'tiden111@gmail.com' }, function(err, updatedUser) {
+                        assert.equal(alldishes.length, updatedUser.dishes.length, "did not update user dishes ref");
+                        done();
+                      });
                     });
 
                   });
@@ -146,9 +152,9 @@ describe('Post Service Tests', function() {
 
 describe('Post Events Tests', function(act) {
   var accessToken;
-  var clientId = 'unitableself';
-  var clientSecret = "9a5667gfn5h434df7dh8f99";
-  var clientCredentials = new Buffer(clientId + ":" + clientSecret).toString('base64');
+  var clientId = config.clientId;
+  var clientSecret = config.clientSecret;
+  var clientCredentials = config.clientCredentials;
 
   before(function(done) {
 
@@ -175,7 +181,7 @@ describe('Post Events Tests', function(act) {
   it('should send back the new post object', function(done) {
 
     request(app)
-    .post('/oauth/post')
+    .post('/member/post')
     .type('form')
     .set('Authorization', 'Bearer ' + accessToken)
     .send(

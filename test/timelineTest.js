@@ -3,7 +3,7 @@ var assert = require('assert');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 
-var app = require('../app.js');
+var app = require('../app');
 var userService = require('../services/userService');
 var models = require('../models');
 var PostsModel = models.PostsModel;
@@ -16,10 +16,10 @@ var TEST_DOC_NUM = 20;
 var fixtures = {
 	user: {
 		_id: new ObjectId('hosthosthost'),
-    	email: 'test@unitable.com',
-    	// MD5 hashed password 'testpassword'
+    	email: 'test@cmu.edu',
     	password: 'testpassword',
-    	name: "Lee"
+    	name: "Lee",
+    	gender: 1
   	},
 
   	post: {
@@ -76,14 +76,14 @@ describe("TIMELINE TEST", function() {
 
 	it("should respond with proper results without request params", function(done) {
 		request(app)
-			.get('/timeline?startFrom=01/01/1970')
+			.get('/timeline')
 			.expect(200)
 			.end(function(err, res) {
 				var data = res.body;
-				assert(data.length === 10, "number of results is not right");
-				assert(data[0].dishes.length === 3, "number of dishes is not right");
-				assert(data[0].dishes[0].description === "superior", "dishes are not properly retrieved");
-				assert(data[0].host.email === "test@unitable.com", "host is not properly retrieved");
+				assert.equal(data.length, 10, "number of results is not right");
+				assert.equal(data[0].dishes.length, 3, "number of dishes is not right");
+				assert.equal(data[0].dishes[0].description, "superior", "dishes are not properly retrieved");
+				assert.equal(data[0].host.email, "test@cmu.edu", "host is not properly retrieved");
 
 				done();
 			});
@@ -91,12 +91,12 @@ describe("TIMELINE TEST", function() {
 
 	it("should respond with proper results with skip", function(done) {
 		request(app)
-			.get('/timeline?startFrom=01/01/1970&skip=19')
+			.get('/timeline?skip=19')
 			.expect(200)
 			.end(function(err, res) {
 				var data = res.body;
 				//based on TEST_DOC_NUM
-				assert(data.length === 1, "number of results is not right");
+				assert(data.length, 1, "number of results is not right");
 
 				done();
 			});
@@ -104,12 +104,12 @@ describe("TIMELINE TEST", function() {
 
 	it("should respond with proper results with limit", function(done) {
 		request(app)
-			.get('/timeline?startFrom=01/01/1970&limit=3')
+			.get('/timeline?limit=3')
 			.expect(200)
 			.end(function(err, res) {
 				var data = res.body;
 				//based on TEST_DOC_NUM
-				assert(data.length === 3, "number of results is not right");
+				assert.equal(data.length, 3, "number of results is not right");
 
 				done();
 			});
@@ -117,12 +117,12 @@ describe("TIMELINE TEST", function() {
 
 	it("should respond with proper results with both skip and limit", function(done) {
 		request(app)
-			.get('/timeline?startFrom=01/01/1970&skip=15&limit=10')
+			.get('/timeline?skip=15&limit=10')
 			.expect(200)
 			.end(function(err, res) {
 				var data = res.body;
 				//based on TEST_DOC_NUM
-				assert(data.length === 5, "number of results is not right");
+				assert.equal(data.length, 5, "number of results is not right");
 
 				done();
 			});

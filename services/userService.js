@@ -5,15 +5,16 @@ var UsersModel = require('../models').UsersModel;
 
 exports.validateNewUser = function(user) {
 	var emailRegex = /^[a-z][0-9a-z]{2,34}@(andrew\.)?cmu\.edu$/i;
-	var nameRegex = /^[0-9a-zA-Z_]{2,}$/;
+	var nameRegex = /^[0-9a-zA-Z_]{2,35}$/;
 	var phoneRegex = /^\+?\d{10,11}$/;
+	var passwordRegex = /^.{6,}$/;
 	if (!user.email || !emailRegex.test(user.email)) {
 		throw new Error("email invalid");
 	}
 	if (!user.name || !nameRegex.test(user.name)) {
 		throw new Error("name invalid");
 	}
-	if (!user.pwd) {
+	if (!user.password || !passwordRegex.test(user.password)) {
 		throw new Error("password invalid");
 	}
 	if (!user.gender) {
@@ -59,17 +60,31 @@ exports.getUser = function(data, callback) {
 };
 
 exports.getUserByEmail = function(data, callback) {
-	if (!data.email) { callback(new Error('Email is required')); }
+	if (!data.email) {
+		callback(new Error('Email is required'));
+		return;
+	}
 	UsersModel.findOne({ email: data.email }, callback);
 };
 
 exports.getUserById = function(data, callback) {
 	data.id = data.id || data._id;
-	if (!data.id) { callback(new Error('Id is required')); }
+	if (!data.id) {
+		callback(new Error('Id is required'));
+		return;
+	}
 	UsersModel.findOne({ _id: data.id }, callback);
 };
 
 exports.saveUser = function(data, callback) {
 	data.password = crypto.createHash('md5').update(data.password).digest('base64');
 	new UsersModel(data).save(callback);
+};
+
+exports.getProfileById = function(userId, callback) {
+	if (!userId) {
+		callback(new Error("can't find user id"));
+		return;
+	}
+	UsersModel.findOne({ _id: userId }, '_id name email gender address phone avatar', callback);
 };

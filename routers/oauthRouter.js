@@ -1,7 +1,9 @@
 var router = require('express').Router();
 var oauthserver = require('node-oauth2-server');
+var debug = require('debug');
 
 var oauthService = require('../services/oauthService');
+var UserService = require('../services/UserService')
 
 var oauth = oauthserver({
 	model: oauthService,
@@ -15,13 +17,21 @@ router.route('/oauth/token')
 		res.status(405).end();
 	});
 
-router.route('/oauth()|(/*)')
+router.route('/member(()|(/*))')
 	.all(oauth.authorise(), function(req, res, next) {
-			console.log(req.path);
-		if (req.path === '/oauth')
+		if (req.path === '/member')
 			res.status(200).send();
-		else
-			next();
+		else {
+			if (req.user && req.user.id) {
+				var _oldUser = req.user;
+				UserService.getUserById({ id: _oldUser.id }, function(err, user) {
+					debug(err);
+					debug(user);
+					req.user = user;
+					return next(err);
+				});
+			}
+		}
 	});
 
 module.exports = router;

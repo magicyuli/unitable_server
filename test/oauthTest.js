@@ -2,24 +2,24 @@ var request = require('supertest');
 var assert = require('assert');
 var connection = require('mongoose').connection;
 
-var app = require('../app.js');
+var app = require('../app');
+var config = require('../config');
 var userService = require('../services/userService');
 var oauthService = require('../services/oauthService');
 
 var fixtures = {
   	clients: [{
-    	clientId: 'unitableself',
-    	clientSecret: '9a5667gfn5h434df7dh8f99',
+    	clientId: config.clientId,
+    	clientSecret: config.clientSecret,
     	redirectUri: '/oauth/redirect',
     	grantTypes: ['password', 'refresh_token']
   	}],
 
   	users: [{
-    	email: 'test@unitable.com',
-    	// MD5 hashed password 'testpassword'
-    	//hashedPassword: '4WsquNEjFL9O+9YgOQbqbA==',
+    	email: 'test@andrew.cmu.edu',
     	password: 'testpassword',
-    	name: "Lee"
+    	name: "Lee",
+    	gender: 1
   	}]
 };
 
@@ -27,9 +27,9 @@ var fixtures = {
 describe("OAUTH TEST", function() {
 	var accessToken;
 	var refreshToken;
-	var clientId = "unitableself";
-	var clientSecret = "9a5667gfn5h434df7dh8f99";
-	var clientCredentials = new Buffer(clientId + ":" + clientSecret).toString('base64');
+	var clientId = config.clientId;
+	var clientSecret = config.clientSecret;
+	var clientCredentials = config.clientCredentials;
 
 	before(function(cb) {
 		if (connection.readyState !== 1) {
@@ -54,7 +54,7 @@ describe("OAUTH TEST", function() {
 			.set('Authorization', 'Basic ' + clientCredentials)
 			.send({
 				grant_type: 'password',
-				username: 'test@unitable.com',
+				username: 'test@andrew.cmu.edu',
 				password: 'testpassword',
 			})
 			.expect(200)
@@ -76,7 +76,7 @@ describe("OAUTH TEST", function() {
 
 	it("should allow logged in user to view the secret page", function(done) {
 		request(app)
-			.get('/oauth')
+			.get('/member')
 			.set('Authorization', 'Bearer ' + accessToken)
 			.expect(200, done);
 	});
@@ -111,7 +111,7 @@ describe("OAUTH TEST", function() {
 	    		token.userId,
 	    		function(err, doc) {
 	 					request(app)
-	 					  .get('/oauth')
+	 					  .get('/member')
 	 					  .set('Authorization', 'Bearer ' + accessToken)
 	 					  .expect(401, done);
 	  		});

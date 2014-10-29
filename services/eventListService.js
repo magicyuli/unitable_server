@@ -37,8 +37,8 @@ function _getEvents (startFrom, skip, limit, orderBy, hostId, postIds, callback)
 		});
 }
 
-function getTimeline (startFrom, skip, limit, orderBy, callback) {
-	_getEvents (startFrom, skip, limit, orderBy, null, null, callback);
+function getTimeline (skip, limit, orderBy, callback) {
+	_getEvents (new Date().toLocaleDateString(), skip, limit, orderBy, null, null, callback);
 }
 
 function getHostEvents (startFrom, skip, limit, orderBy, userId, callback) {

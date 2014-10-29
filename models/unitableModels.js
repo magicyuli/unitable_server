@@ -7,11 +7,11 @@ var schemas = {
         email: { type: String, unique: true, required: true },
         name: { type: String, required: true },
         password: { type: String, required: true },
-        passwordResetToken: { type: String, unique: true },
+        passwordResetToken: { type: String },
         resetTokenExpires: { type: Date },
         phone: { type: String },
         address: { type: String },
-        gender: { type: Number },
+        gender: { type: Number, required: true },
         avatar: { type: String },
         guestEvents: { type: [{ type: Schema.Types.ObjectId, ref: 'Posts' }] },
         dishes: { type: [{ type: Schema.Types.ObjectId, ref: 'Dishes' }] }

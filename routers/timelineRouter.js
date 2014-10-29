@@ -5,10 +5,9 @@ var eventListService = require('../services/eventListService');
 router.route('/timeline')
 	.get(function(req, res, next) {
 		eventListService.getTimeline(
-			req.param('startFrom'),
-			req.param('skip'),
-			req.param('limit'),
-			req.param('orderBy'),
+			req.query.skip,
+			req.query.limit,
+			req.query.orderBy,
 			function(err, docs) {
 				if (err)
 					console.log(err);

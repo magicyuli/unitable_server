@@ -1,39 +1,84 @@
 var router = require('express').Router();
-var userService = require('../services/userService')
+var request = require('request');
+
+var config = require('../config');
+var userService = require('../services/userService');
 
 router.route('/register')
+	.get(function(req, res, next) {
+		res.status(405).end();
+	})
+	.post(function(req, res, next) {
+		var user = {};
 
-.get(function(req, res, next) {
-	res.status(405).end();
-})
-.post(function(req, res, next) {
-	var user = {};
+		user['email'] = req.body.email;
+		user['name'] = req.body.name;
+		user['password'] = req.body.password;
+		user['originalPassword'] = req.body.password;
+		user['gender'] = req.body.gender;
+		user['avatar'] = req.body.avatar || null;
+		user['phone'] = req.body.phone || null;
+		user['address'] = req.body.address || null;
 
-	user['email'] = req.param('email');
-	user['name'] = req.param('name');
-	user['pwd'] = req.param('password');
-	user['gender'] = req.param('gender');
-	user['avatar'] = req.param('avatar') || null;
-	user['phone'] = req.param('phone') || null;
-	user['address'] = req.param('address') || null;
+		try {
+			userService.validateNewUser(user);
+		} catch (err) {
+			console.log("userRouter.js:26");
+			console.log(err);
+			return res.status(400).send(err.message);
+		}
+		
+		userService.saveUser(user,
+			function(err, doc) {
+				if (err) {
+					return next(err);
+				}
+				request({
+					uri: 'http://localhost:8086/oauth/token',
+					method: 'POST',
+					headers: {
+						'Authorization': 'Basic ' + config.clientCredentials
+					},
+					form: {
+						grant_type: 'password',
+						username: user.email,
+						password: user.originalPassword
+					},
+					json: true
+				}, function(err, resp, body) {
+					if (err) {
+						return next(err);
+					}
+					if (resp && resp.statusCode !== 200) {
+						return res.status(resp.statusCode).send(resp.body);
+					}
+					doc.password = undefined;
+					res.json({ user: doc, tokens: body });
+				});
+			});
+	});
 
-	try {
-		userService.checkValid(user);
-	} catch (err) {
-		res.status(400).send(err.message);
-		return;
-	}
-	
-	userService.saveUser(user,
-		function(doc) {
-			//TODO
-			res.set('content-type', 'text/plain');
-			res.send(JSON.stringify(doc, null, "    "));
-			//res.json(doc);
-		},
-		function(err) {
-			res.status(500).send(err);
+router.route('/member/profile')
+	.get(function(req, res, next) {
+		var userId;
+		console.log("userRouter.js:63:GET /member/profile");
+		if (req.query.id) {
+			console.log("requesting profile of another user");
+			userId = req.query.id;
+		} else {
+			console.log("requesting profile of self");
+			userId = req.user.id;
+		}
+		if (!userId) {
+			next(new Error("user id required"));
+			return;
+		}
+		console.log("requesting profile of user id " + userId);
+		userService.getProfileById(userId, function(err, doc) {
+			if (err) next(err);
+			res.json(doc);
 		});
-});
+	})
+	.post();
 
 module.exports = router;
