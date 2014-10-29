@@ -13,7 +13,6 @@ var schemas = {
         address: { type: String },
         gender: { type: Number, required: true },
         avatar: { type: String },
-        guestEvents: { type: [{ type: Schema.Types.ObjectId, ref: 'Posts' }] },
         dishes: { type: [{ type: Schema.Types.ObjectId, ref: 'Dishes' }] }
     },
     'Posts': {

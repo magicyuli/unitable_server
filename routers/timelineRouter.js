@@ -10,7 +10,7 @@ router.route('/timeline')
 			req.query.orderBy,
 			function(err, docs) {
 				if (err)
-					console.log(err);
+					next(err);
 				else 
 					res.json(docs);
 			});
