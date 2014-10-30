@@ -21,6 +21,7 @@ var schemas = {
         host: { type: Schema.Types.ObjectId, required: true, ref: 'Users' },
         guests: { type: [{ type: Schema.Types.ObjectId, ref: 'Users' }] },
         dishes: { type: [{ type: Schema.Types.ObjectId, ref: 'Dishes' }], required: true },
+        price: { type: Number },
         maxGuestNum: { type: Number, required: true }
     },
     'Dishes': {
