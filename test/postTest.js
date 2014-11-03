@@ -38,6 +38,9 @@ var fixtures = {
   ]
 };
 
+var tidenUser = null;
+var testUser = null;
+
 describe('Post Service Tests', function() {
 
   before(function(cb) {
@@ -51,6 +54,11 @@ describe('Post Service Tests', function() {
         connection.db.dropDatabase(function() {
           fixtures.users.forEach(function(u, i) {
             userService.saveUser(u, function(err, doc) {
+              if (doc.email == 'test@unitable.com') {
+                testUser = doc;
+              } else {
+                tidenUser = doc;
+              }
               if (i >= fixtures.users.length - 1) {
                 fixtures.clients.forEach(function(c, j) {
                   oAuthService.saveClient(c, function(err, doc) {
@@ -67,7 +75,8 @@ describe('Post Service Tests', function() {
   });
 
   it('should add a post as well as the new dishes to the db', function(done) {
-    UserModel.findOne({ email: 'test@unitable.com' }, function(err, user) {
+    //UserModel.findOne({ email: 'test@unitable.com' }, function(err, user) {
+      var user = testUser;
 
       var post = {
         date: new Date(),
@@ -85,14 +94,15 @@ describe('Post Service Tests', function() {
 
       PostService.newPost({ user: user, event: post, dishes: dishes }, function(err, doc) {
         assert(doc, "new post isn't saved");
-        done();
+        done(err);
       });
 
-    });
+    //});
   });
 
   it("should add a post and update the user's existing dishes", function(done) {
     UserModel.findOne({ email: 'tiden111@gmail.com' }, function(err, user) {
+
       var dishes = [
         { name: 'dish1', description: 'some dish', host: user._id, pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] },
         { name: 'dish2', description: 'some dish', host: user._id, pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] },
@@ -147,6 +157,89 @@ describe('Post Service Tests', function() {
     });
   });
 
+  it('should return posts for a host', function(done) {
+    var user = tidenUser;
+    var posts = [
+      { date: new Date(), location: 'CR 1 Torrens Building Victoria Square SA 5000', host: user._id, maxGuestNum: 12 },
+      { date: new Date(), location: 'Dining Room Torrens Building Victoria Square SA 5000', host: user._id, maxGuestNum: 10 },
+      { date: new Date(), location: 'Project Room 3 Torrens Building Victoria Square SA 5000', host: user._id, maxGuestNum: 8 }
+    ];
+
+    var adish = { name: 'postDISH', description: 'a special dish for testing!', host: user._id, pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] };
+
+    posts.forEach(function(p, i) {
+      PostService.newPost({ user: user, event: p, dishes: [adish] }, function(err, newpost) {
+        posts[i] = newpost;
+        if (i == posts.length - 1) {
+          PostService.getPostsByUser({ user: user }, function (err, userPosts) {
+            assert(userPosts.length >= 3);
+            done();
+          });
+        }
+      });
+    });
+
+  });
+
+  it('should return posts for a guest', function(done) {
+    var user = testUser;
+
+    var posts = [
+      { date: new Date(), location: 'CR 1 Torrens Building Victoria Square SA 5000', host: user._id, maxGuestNum: 12},
+      { date: new Date(), location: 'Dining Room Torrens Building Victoria Square SA 5000', host: user._id, maxGuestNum: 10 },
+      { date: new Date(), location: 'Project Room 3 Torrens Building Victoria Square SA 5000', host: user._id, maxGuestNum: 8 },
+      { date: new Date(), location: '00', host: user._id, maxGuestNum: 8 },
+      { date: new Date(), location: '000', host: user._id, maxGuestNum: 8 },
+      { date: new Date(), location: '0000', host: user._id, maxGuestNum: 8 },
+      { date: new Date(), location: '00000', host: user._id, maxGuestNum: 8 },
+      { date: new Date(), location: '000000', host: user._id, maxGuestNum: 8 },
+      { date: new Date(), location: '0000000', host: user._id, maxGuestNum: 8 }
+    ];
+
+    var adish = { name: 'postDISH', description: 'a special dish for testing!', host: user._id, pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] };
+
+    var guestEvents = [];
+
+    var stop = false;
+    posts.forEach(function(p, i) {
+      if (stop) {
+        return;
+      }
+      PostService.newPost({ user: user, event: p, dishes: [adish] }, function(err, _newpost, u) {
+        if (err) {
+          stop = true;
+          return done(err);
+        }
+        _newpost.guests.push(tidenUser._id);
+        _newpost.save(function(err, newpost) {
+          if (err) {
+            stop = true;
+            return done(err);
+          }
+          user = u;
+          posts[i] = newpost;
+          guestEvents.push(newpost._id);
+          if (guestEvents.length == posts.length) {
+            //UserModel.findByIdAndUpdate(tidenUser._id, { $addToSet: { guestEvents: { $each: guestEvents } } }, function(err, _tuser) {
+            //  if (err) { return done(err); }
+            PostService.getPostsByUser({user: tidenUser, asGuest: true, populate: true}, function (err, userPosts) {
+              assert(userPosts.length >= posts.length);
+              var found = false;
+              userPosts.forEach(function (uP) {
+                if (uP.location == '000') {
+                  found = true;
+                }
+              });
+              assert(found);
+              done();
+            });
+            //});
+          }
+        })
+      });
+    });
+
+  });
 });
 
 
@@ -201,5 +294,34 @@ describe('Post Events Tests', function(act) {
       done();
     });
 
+  });
+
+  it('should send back all the host posts of the user', function(done) {
+    var adish = { name: 'postDISH', description: 'a special dish for testing!', host: tidenUser._id, pictures: ['4WsquNEjFEjFL9O+9YgOL9O+EjFL9O+9YgO9YgOQbqbAEjFL9O+9YgO'] };
+    var newposts = [
+      { date: new Date(), location: '1111111CR 1 Torrens Building Victoria Square SA 5000', host: tidenUser._id, maxGuestNum: 12, dishes: [adish] },
+      { date: new Date(), location: '1111111Dining Room Torrens Building Victoria Square SA 5000', host: tidenUser._id, maxGuestNum: 10, dishes: [adish] },
+      { date: new Date(), location: '1111111DProject Room 3 Torrens Building Victoria Square SA 5000', host: tidenUser._id, maxGuestNum: 8, dishes: [adish] },
+      { date: new Date(), location: '1111111D00', host: tidenUser._id, maxGuestNum: 8, dishes: [adish] },
+      { date: new Date(), location: '0001111111D', host: tidenUser._id, maxGuestNum: 8, dishes: [adish] },
+      { date: new Date(), location: '00001111111D', host: tidenUser._id, maxGuestNum: 8, dishes: [adish] },
+      { date: new Date(), location: '000001111111D', host: tidenUser._id, maxGuestNum: 8, dishes: [adish] },
+      { date: new Date(), location: '0000001111111D', host: tidenUser._id, maxGuestNum: 8, dishes: [adish] },
+      { date: new Date(), location: '00000001111111D', host: tidenUser._id, maxGuestNum: 8, dishes: [adish] }
+    ];
+    PostService.newPosts({ user: tidenUser, events: newposts }, function(err, newevents) {
+      if (err) {
+        return done(err);
+      }
+      request(app)
+        .get('/member/post?host=1&populate=1')
+        .set('Authorization', 'Bearer ' + accessToken)
+        .expect(200)
+        .end(function(err, res) {
+          assert(res.body, "server didn't return the posts object");
+          assert(res.body.length >= newevents.length, "server didn't return sufficient posts");
+          done();
+        });
+    });
   });
 });

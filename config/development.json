@@ -1,5 +1,5 @@
 {
-  "db": "mongodb://testdba:testadmin@localhost:27017/test",
+  "db": "mongodb://testdba:testadmin@localhost:27017/unitable_dev",
   "emailer": {
      "from": "support@papers.example.com"
   },

@@ -74,7 +74,7 @@ router.route('/member/profile')
 			});
 		} else if (req.user.id) {
 			console.log("requesting profile of self; user id " + req.user.id);
-
+			req.user.password = undefined;
 			res.json(req.user);
 		} else {
 			next(new Error("can't find user id required"));	
