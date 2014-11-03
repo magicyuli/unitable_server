@@ -3,7 +3,7 @@ var oauthserver = require('node-oauth2-server');
 var debug = require('debug');
 
 var oauthService = require('../services/oauthService');
-var UserService = require('../services/UserService');
+var UserService = require('../services/userService');
 
 var oauth = oauthserver({
 	model: oauthService,
