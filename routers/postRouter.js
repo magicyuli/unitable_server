@@ -66,8 +66,13 @@ router.route('/member/guest')
         next(err);
         return;
       }
-      logger.info("postRouter.js:68: user %s guesting %s successful", userId, postId);
-      res.json({message: "guesting succeeded"});
+      if (num == 1) {
+        logger.info("postRouter.js:68: user " + userId + " guesting " + postId + " successful");
+        res.json({message: "guesting succeeded"});
+      } else {
+        res.status(400).json({message: "guesting failed. Are you trying to guest your own post?"});
+      }
+      
     });
   });
 

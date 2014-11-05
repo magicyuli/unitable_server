@@ -184,5 +184,5 @@ exports.getPostsByUser = function(data, callback) {
  *@author Lee
  */
 exports.guest = function (userId, postId, callback) {
-  PostModel.update({ _id: postId }, { $push: { guests: userId }}, callback);
+  PostModel.update({ _id: postId, host: { $ne: userId } }, { $push: { guests: userId }}, callback);
 };

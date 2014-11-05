@@ -4,6 +4,7 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 
 var config = require('../config');
+var logger = require('../utils/logger');
 var app = require('../app');
 var userService = require('../services/userService');
 var oauthService = require('../services/oauthService');
@@ -52,6 +53,7 @@ var fixtures = {
 };
 
 describe("GUEST TEST", function() {
+	var hostAccessToken;
 	var guestAccessToken;
 
 	before(function(done) {
@@ -68,6 +70,22 @@ describe("GUEST TEST", function() {
 			      		userService.saveUser(fixtures.guestUser, function() {
 				        	new DishesModel(fixtures.dish).save(function(err, doc) {
 				        		new PostsModel(fixtures.post).save(function() {
+				        			request(app)
+										.post('/oauth/token')
+										.type('form')
+										.set('Authorization', 'Basic ' + config.clientCredentials)
+										.send({
+											grant_type: 'password',
+											username: 'host@cmu.edu',
+											password: 'testpassword'
+										})
+										.expect(200)
+										.end(function(err, res) {
+											assert(res.body.access_token, "request token failed");
+											hostAccessToken = res.body.access_token;
+
+										});
+
 									request(app)
 										.post('/oauth/token')
 										.type('form')
@@ -104,7 +122,24 @@ describe("GUEST TEST", function() {
 			.expect(200)
 			.end(function(err, res) {
 				var post = res.body;
-				assert.equal(post.message, "guesting succeeded", "number of returned posts is wrong");
+				assert.equal(post.message, "guesting succeeded", "guesting failed");
+				done();
+			});
+	});
+
+	it("should not add user to his own post", function(done) {
+		request(app)
+			.post('/member/guest')
+			.type('form')
+			.set('Authorization', 'Bearer ' + hostAccessToken)
+			.send({
+				postId: new ObjectId('postpostpost').toString()
+			})
+			.expect(400)
+			.end(function(err, res) {
+				var post = res.body;
+				assert.equal(post.message, "guesting failed. Are you trying to guest your own post?", "something's wrong");
+
 				done();
 			});
 	});

@@ -8,7 +8,7 @@ var loggers = {};
 loggers['others'] = new winston.Logger({
 	transports: [
 		new (winston.transports.File)({
-			filename: configs.regularLogPath, level: 'debug',
+			filename: configs.regularLogPath, level: 'info',
 			handleExceptions: false,
 			maxsize: 5242880, //5MB
             maxFiles: 5,
