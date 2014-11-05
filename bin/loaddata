@@ -67,7 +67,8 @@ var fixtures = {
     host: new ObjectId('hosthosthost'),
     dishes: [new ObjectId('dishdishdish'), new ObjectId('dishdishdish'), new ObjectId('dishdishdish')],
     guests: [new ObjectId('guestguestst'), new ObjectId('123123123123'), new ObjectId('234234234234')],
-    maxGuestNum: 10
+    maxGuestNum: 10,
+    price: 1000
   },
   dish: {
     _id: new ObjectId('dishdishdish'),
