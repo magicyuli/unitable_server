@@ -1,8 +1,9 @@
 /* Connect to Mongodb */
 var mongoose = require('mongoose');
 var config = require('../config');
+var logger = require('../utils/logger');
 
-console.log('Connecting to db: ' + config.db);
+logger.info('Connecting to db: ' + config.db);
 mongoose.connect(config.db, {});
 
 var oauthModels = require('./oauthModels');

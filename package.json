@@ -17,7 +17,8 @@
     "node-oauth2-server": "^2.2.2",
     "nodemailer": "^1.3.0",
     "request": "^2.46.0",
-    "supertest": "^0.14.0"
+    "supertest": "^0.14.0",
+    "winston": "^0.8.3"
   },
   "engines": {
     "node": "0.10.x"

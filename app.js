@@ -1,7 +1,7 @@
 var app = require('express')();
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
-var expressErrorHandler = require('errorhandler');
+var logger = require('./utils/logger');
 
 var routers = require('./routers');
 
@@ -10,11 +10,7 @@ app.set('port', process.env.PORT || 8086);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(morgan('dev'));
-if (app.get('env') === 'development') {
-    //seems this doesn't work?
-    app.use(expressErrorHandler());
-}
+app.use(morgan('dev', { "stream": logger.stream }));
 
 app.use(routers.optionsRouter);
 app.use(routers.timelineRouter);
@@ -26,7 +22,7 @@ app.use(routers.myEventRouter);
 
 
 app.use(function(err, req, res, next) {
-    console.error('Error:', err);
+    logger.error(err);
 
     if (err && err.name === 'OAuth2Error') {
         res.status(err.code).send(err.errors);

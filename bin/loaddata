@@ -5,11 +5,11 @@
 
 // var dataName = 'mock';
 // if(process.argv.length > 3) {
-//   console.log(process.argv);
+//   logger.info(process.argv);
 //   dataName = process.argv[process.argv.length - 1];
 // }
 
-// console.log('Loading data: ' + dataName + '.js');
+// logger.info('Loading data: ' + dataName + '.js');
 // var data = require('../data/' + dataName + '.js');
 
 // for(var type in data) {
@@ -20,7 +20,7 @@
 //   	  if(err) {
 //   	    console.error(err);
 //   	  } else {
-//   	    console.log('Inserted data: ' + doc);
+//   	    logger.info('Inserted data: ' + doc);
 //   	  }
 // 	  });
 //   });
@@ -29,6 +29,7 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 
 var config = require('../config');
+var logger = require('../utils/logger');
 var app = require('../app');
 var userService = require('../services/userService');
 var oauthService = require('../services/oauthService');
@@ -95,7 +96,7 @@ function onReady () {
                 posts.push(fixtures.post);
               }
               PostsModel.create(posts, function() {
-                console.log("mock data insert done");
+                logger.info("mock data insert done");
                 process.exit(0);  
               });
             });

@@ -2,6 +2,7 @@ var router = require('express').Router();
 var request = require('request');
 
 var config = require('../config');
+var logger = require('../utils/logger');
 var userService = require('../services/userService');
 
 router.route('/register')
@@ -23,8 +24,8 @@ router.route('/register')
 		try {
 			userService.validateNewUser(user);
 		} catch (err) {
-			console.log("userRouter.js:26");
-			console.log(err);
+			logger.info("userRouter.js:26");
+			logger.error(err);
 			return res.status(400).send(err.message);
 		}
 		
@@ -60,10 +61,10 @@ router.route('/register')
 
 router.route('/member/profile')
 	.get(function(req, res, next) {
-		console.log("userRouter.js:63:GET /member/profile");
+		logger.info("userRouter.js:63:GET /member/profile");
 
 		if (req.query.id) {
-			console.log("requesting profile of another user; user id " + req.query.id);
+			logger.info("requesting profile of another user; user id " + req.query.id);
 
 			userService.getProfileById(req.query.id, function(err, doc) {
 				if (err) {
@@ -73,7 +74,7 @@ router.route('/member/profile')
 				res.json(doc);
 			});
 		} else if (req.user.id) {
-			console.log("requesting profile of self; user id " + req.user.id);
+			logger.info("requesting profile of self; user id " + req.user.id);
 			req.user.password = undefined;
 			res.json(req.user);
 		} else {

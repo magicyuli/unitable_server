@@ -105,7 +105,6 @@ describe("GUEST TEST", function() {
 			.end(function(err, res) {
 				var post = res.body;
 				assert.equal(post.message, "guesting succeeded", "number of returned posts is wrong");
-				console.log(post);
 				done();
 			});
 	});

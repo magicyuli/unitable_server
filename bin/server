@@ -1,16 +1,11 @@
 #!/usr/bin/env node
-/* Load configuration */
-var config = require('../config/index');
-
-/* Load all Mongoose Models */
-require('../models');
-
-/* Start the server */
-var app = require('../app.js');
 var http = require('http');
+
+var app = require('./app');
+var logger = require('./utils/logger');
 //var https = require('https');
 
 http.createServer(app).listen(app.get('port'), function() {
-  console.log("http server listening on: " + app.get('port'));
+	logger.info("http server listening on :8086");
 });
 //https.createServer(app).listen(443);

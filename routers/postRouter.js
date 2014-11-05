@@ -1,6 +1,7 @@
 var router = require('express').Router();
 var debug = require('debug')('dev');
 
+var logger = require('../utils/logger');
 var PostService = require('../services/postService');
 
 router.route('/member/post')
@@ -65,7 +66,7 @@ router.route('/member/guest')
         next(err);
         return;
       }
-      console.log("postRouter.js:68: user %s guesting %s successful", userId, postId);
+      logger.info("postRouter.js:68: user %s guesting %s successful", userId, postId);
       res.json({message: "guesting succeeded"});
     });
   });
