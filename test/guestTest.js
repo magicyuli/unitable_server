@@ -22,13 +22,20 @@ var fixtures = {
     	name: "Lee",
     	gender: 1
   	},
-  	guestUser: {
-		_id: new ObjectId('guestguestst'),
-    	email: 'guest@cmu.edu',
+  	guestUsers: [{
+		_id: new ObjectId('guestguest11'),
+    	email: 'guest1@cmu.edu',
     	password: 'testpassword',
     	name: "Yu",
     	gender: 1,
   	},
+  	{
+		_id: new ObjectId('guestguest22'),
+    	email: 'guest2@cmu.edu',
+    	password: 'testpassword',
+    	name: "Yu",
+    	gender: 1,
+  	}],
   	client: {
     	clientId: config.clientId,
     	clientSecret: config.clientSecret,
@@ -37,12 +44,12 @@ var fixtures = {
   	},
   	post: {
   		_id: new ObjectId('postpostpost'),
-    	date: new Date(),
+    	date: new Date("01/01/2020"),
 		location: "12345 Tower KW St. SA 5000",
 		host: new ObjectId('hosthosthost'),
 		dishes: [new ObjectId('dishdishdish'), new ObjectId('dishdishdish'), new ObjectId('dishdishdish')],
-		guests: [new ObjectId('guestguestst'), new ObjectId('123123123123'), new ObjectId('234234234234')],
-		maxGuestNum: 10
+		guests: [],
+		maxGuestNum: 1
   	},
   	dish: {
   		_id: new ObjectId('dishdishdish'),
@@ -54,7 +61,8 @@ var fixtures = {
 
 describe("GUEST TEST", function() {
 	var hostAccessToken;
-	var guestAccessToken;
+	var guest1AccessToken;
+	var guest2AccessToken;
 
 	before(function(done) {
 		if (connection.readyState !== 1) {
@@ -67,43 +75,61 @@ describe("GUEST TEST", function() {
 	  		connection.db.dropDatabase(function() {
 	  			oauthService.saveClient(fixtures.client, function() {
 			      	userService.saveUser(fixtures.hostUser, function() {
-			      		userService.saveUser(fixtures.guestUser, function() {
-				        	new DishesModel(fixtures.dish).save(function(err, doc) {
-				        		new PostsModel(fixtures.post).save(function() {
-				        			request(app)
-										.post('/oauth/token')
-										.type('form')
-										.set('Authorization', 'Basic ' + config.clientCredentials)
-										.send({
-											grant_type: 'password',
-											username: 'host@cmu.edu',
-											password: 'testpassword'
-										})
-										.expect(200)
-										.end(function(err, res) {
-											assert(res.body.access_token, "request token failed");
-											hostAccessToken = res.body.access_token;
+			      		userService.saveUser(fixtures.guestUsers[0], function() {
+			      			userService.saveUser(fixtures.guestUsers[1], function() {
+					        	new DishesModel(fixtures.dish).save(function(err, doc) {
+					        		new PostsModel(fixtures.post).save(function() {
+					        			request(app)
+											.post('/oauth/token')
+											.type('form')
+											.set('Authorization', 'Basic ' + config.clientCredentials)
+											.send({
+												grant_type: 'password',
+												username: 'host@cmu.edu',
+												password: 'testpassword'
+											})
+											.expect(200)
+											.end(function(err, res) {
+												assert(res.body.access_token, "request token failed");
+												hostAccessToken = res.body.access_token;
 
-										});
+											});
 
-									request(app)
-										.post('/oauth/token')
-										.type('form')
-										.set('Authorization', 'Basic ' + config.clientCredentials)
-										.send({
-											grant_type: 'password',
-											username: 'guest@cmu.edu',
-											password: 'testpassword'
-										})
-										.expect(200)
-										.end(function(err, res) {
-											assert(res.body.access_token, "request token failed");
-											guestAccessToken = res.body.access_token;
+										request(app)
+											.post('/oauth/token')
+											.type('form')
+											.set('Authorization', 'Basic ' + config.clientCredentials)
+											.send({
+												grant_type: 'password',
+												username: 'guest1@cmu.edu',
+												password: 'testpassword'
+											})
+											.expect(200)
+											.end(function(err, res) {
+												assert(res.body.access_token, "request token failed");
+												guest1AccessToken = res.body.access_token;
 
-											done();
-										});
-								});
-				        	});
+											});
+
+										request(app)
+											.post('/oauth/token')
+											.type('form')
+											.set('Authorization', 'Basic ' + config.clientCredentials)
+											.send({
+												grant_type: 'password',
+												username: 'guest2@cmu.edu',
+												password: 'testpassword'
+											})
+											.expect(200)
+											.end(function(err, res) {
+												assert(res.body.access_token, "request token failed");
+												guest2AccessToken = res.body.access_token;
+
+												done();
+											});
+									});
+					        	});
+							});
 				        });
 			      	});
 			    });
@@ -115,7 +141,7 @@ describe("GUEST TEST", function() {
 		request(app)
 			.post('/member/guest')
 			.type('form')
-			.set('Authorization', 'Bearer ' + guestAccessToken)
+			.set('Authorization', 'Bearer ' + guest1AccessToken)
 			.send({
 				postId: new ObjectId('postpostpost').toString()
 			})
@@ -123,6 +149,22 @@ describe("GUEST TEST", function() {
 			.end(function(err, res) {
 				var post = res.body;
 				assert.equal(post.message, "guesting succeeded", "guesting failed");
+				done();
+			});
+	});
+
+	it("should not add one user to a post twice", function(done) {
+		request(app)
+			.post('/member/guest')
+			.type('form')
+			.set('Authorization', 'Bearer ' + guest1AccessToken)
+			.send({
+				postId: new ObjectId('postpostpost').toString()
+			})
+			.expect(200)
+			.end(function(err, res) {
+				var post = res.body;
+				assert.equal(post.message, "you've already guested this post: " + new ObjectId('postpostpost').toString(), "guesting failed");
 				done();
 			});
 	});
@@ -138,7 +180,24 @@ describe("GUEST TEST", function() {
 			.expect(400)
 			.end(function(err, res) {
 				var post = res.body;
-				assert.equal(post.message, "guesting failed. Are you trying to guest your own post?", "something's wrong");
+				assert.equal(post.message, "you don't need to guest your own post: " + new ObjectId('postpostpost').toString(), "something's wrong");
+
+				done();
+			});
+	});
+
+	it("should not let user guest if the maxGuestNum is reached", function(done) {
+		request(app)
+			.post('/member/guest')
+			.type('form')
+			.set('Authorization', 'Bearer ' + guest2AccessToken)
+			.send({
+				postId: new ObjectId('postpostpost').toString()
+			})
+			.expect(400)
+			.end(function(err, res) {
+				var post = res.body;
+				assert.equal(post.message, "no available space for this post: " + new ObjectId('postpostpost').toString(), "something's wrong");
 
 				done();
 			});
@@ -147,7 +206,7 @@ describe("GUEST TEST", function() {
 	it("should prevent POST request", function(done) {
 		request(app)
 			.get('/member/guest')
-			.set('Authorization', 'Bearer ' + guestAccessToken)
+			.set('Authorization', 'Bearer ' + guest1AccessToken)
 			.expect(405, done);
 	});
 

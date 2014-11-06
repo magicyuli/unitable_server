@@ -23,7 +23,7 @@ var fixtures = {
   	},
 
   	post: {
-    	date: new Date(),
+    	date: new Date("01/01/2020"),
 		location: "12345 Tower KW St. SA 5000",
 		host: new ObjectId('hosthosthost'),
 		dishes: [new ObjectId('dishdishdish'), new ObjectId('dishdishdish'), new ObjectId('dishdishdish')],

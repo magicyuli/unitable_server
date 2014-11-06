@@ -184,5 +184,31 @@ exports.getPostsByUser = function(data, callback) {
  *@author Lee
  */
 exports.guest = function (userId, postId, callback) {
-  PostModel.update({ _id: postId, host: { $ne: userId } }, { $push: { guests: userId }}, callback);
+  PostModel.findOne({_id: postId}, function(err, doc) {
+    if (err) {
+      callback(err);
+      return;
+    }
+    if (doc.host == userId) {
+      var err = new Error("you don't need to guest your own post: " + postId);
+      err.code = 400;
+      callback(err);
+      return;
+    }
+    for (var k in doc.guests) {
+      if (doc.guests[k] == userId) {
+        var err = new Error("you've already guested this post: " + postId);
+        err.code = 400;
+        callback(err);
+        return;
+      }
+    }
+    if (doc.maxGuestNum <= doc.guests.length) {
+      var err = new Error("no available space for this post: " + postId);
+      err.code = 400;
+      callback(err);
+      return;
+    }
+    PostModel.update({ _id: postId }, { $push: { guests: userId }}, callback);
+  });
 };

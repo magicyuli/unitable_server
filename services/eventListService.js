@@ -14,7 +14,7 @@ function _getEvents (startFrom, skip, limit, orderBy, hostId, guestId, callback)
 
 	startFrom && (queryObj['date'] = { $gt: startFrom });
 	hostId && (queryObj['host'] = hostId);
-	guestId && (queryObj['guests'] = { $in: [guestId] });
+	guestId && (queryObj['guests'] = guestId);
 
 	PostsModel
 		.find(queryObj, null, {skip: skip, limit: limit, sort: orderBy})

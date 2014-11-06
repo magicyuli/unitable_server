@@ -63,16 +63,15 @@ router.route('/member/guest')
     var postId = req.body.postId;
     PostService.guest(userId, postId, function(err, num, raw) {
       if (err) {
-        next(err);
+        if (err.code === 400) {
+          res.status(400).json({message: err.message});
+        } else {
+          next(err);
+        }
         return;
       }
-      if (num == 1) {
-        logger.info("postRouter.js:68: user " + userId + " guesting " + postId + " successful");
-        res.json({message: "guesting succeeded"});
-      } else {
-        res.status(400).json({message: "guesting failed. Are you trying to guest your own post?"});
-      }
-      
+      logger.info("postRouter.js:68: user " + userId + " guesting " + postId + " successful");
+      res.json({message: "guesting succeeded"});
     });
   });
 
