@@ -40,7 +40,7 @@ function _getEvents (startFrom, skip, limit, orderBy, hostId, guestId, callback)
 }
 
 function getTimeline (skip, limit, orderBy, callback) {
-	_getEvents (new Date().toLocaleDateString(), skip, limit, orderBy, null, null, callback);
+	_getEvents (new Date(), skip, limit, orderBy, null, null, callback);
 }
 
 function getHostEvents (skip, limit, orderBy, userId, callback) {
