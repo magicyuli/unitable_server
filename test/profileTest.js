@@ -81,6 +81,7 @@ describe("PROFILE TEST", function() {
 			.end(function(err, res) {
 				assert(res.body, "profile retrieve failed");
 				assert.equal(res.body.address, "12345 Tower KW St. SA 5000", "user profile is wrong");
+				assert(!res.body.password, "password shouldn't be returned");
 				assert(res.body.dishes, "should return dishes");
 
 				done();
@@ -119,6 +120,7 @@ describe("PROFILE TEST", function() {
 				assert.equal(profile.address, "new address", "new address is wrong");
 				assert.equal(profile.name, "Yu", "new name is wrong");
 				assert.equal(profile.phone, "0123456789", "new phone is wrong");
+				assert(!profile.password, "password shouldn't be returned");
 
 				done();
 			});

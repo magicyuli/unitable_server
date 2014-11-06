@@ -75,7 +75,7 @@ router.route('/member/profile')
 			});
 		} else if (req.user.id) {
 			logger.info("requesting profile of self; user id " + req.user.id);
-			req.user.password = undefined;
+			req.user.password = void 0;
 			res.json(req.user);
 		} else {
 			next(new Error("can't find user id required"));	
@@ -97,6 +97,7 @@ router.route('/member/profile')
 				next(err);
 				return;
 			}
+			doc.password = void 0;
 			res.json(doc);
 		});
 	});
