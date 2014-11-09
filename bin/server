@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 var http = require('http');
 
-var app = require('./app');
-var logger = require('./utils/logger');
+var app = require('../app');
+var logger = require('../utils/logger');
 //var https = require('https');
 
 http.createServer(app).listen(app.get('port'), function() {

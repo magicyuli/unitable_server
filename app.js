@@ -10,7 +10,7 @@ app.set('port', process.env.PORT || 8086);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(morgan('dev', { "stream": logger.stream }));
+app.use(morgan(':remote-addr - :remote-user [:date[clf]], :method :url HTTP/:http-version :status, :res[content-length], :response-time ms, :referrer, :user-agent', { "stream": logger.stream }));
 
 app.use(routers.optionsRouter);
 app.use(routers.timelineRouter);
