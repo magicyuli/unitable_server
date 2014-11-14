@@ -5,37 +5,37 @@ var logger = require('../utils/logger');
 var PostService = require('../services/postService');
 
 router.route('/member/post')
-/**
- * When sending POST to /member/post, add a new post
- */
-.post(function(req, res, next) {
-  debug(req.body);
+  /**
+   * When sending POST to /member/post, add a new post
+   */
+  .post(function(req, res, next) {
+    debug(req.body);
 
-  if (!req.user) {
-    return next(new Error('User is required for NEW POST'));
-  }
+    if (!req.user) {
+      return next(new Error('User is required for NEW POST'));
+    }
 
-  var data = {
-    user: req.user,
-    event: req.body.event,
-    dishes: req.body.dishes
-  };
+    var data = {
+      user: req.user,
+      event: req.body.event,
+      dishes: req.body.dishes
+    };
 
-  debug(data);
-  PostService.newPost(data, function(err, post) {
-    if (err) { return next(err); }
-    debug(post);
-    res.send({ post: post });
-  });
+    debug(data);
+    PostService.newPost(data, function(err, post) {
+      if (err) { return next(err); }
+      debug(post);
+      res.send({ post: post });
+    });
 
-})
-/**
- * When sending GET to /member/post, query posts according to parameters
- */
-.get(function(req, res, next) {
-  if (!req.user)   {
-    return next(new Error('User is required for GET POSTS'));
-  }
+  })
+  /**
+   * When sending GET to /member/post, query posts according to parameters
+   */
+  .get(function(req, res, next) {
+    if (!req.user)   {
+      return next(new Error('User is required for GET POSTS'));
+    }
 
     var asHost = '1' === req.param('host');
     var asGuest = '1' === req.param('guest');
@@ -48,7 +48,18 @@ router.route('/member/post')
       res.json(posts);
     });
 
-});
+  });
+
+router.route('/member/dishes')
+
+  .get(function(req, res, next) {
+    PostService.getDishesByUser({ user: req.user }, function(err, result) {
+      if (err) {
+        return next(err);
+      }
+      res.json(result);
+    });
+  });
 
 /**
  * Guesting starts

@@ -240,6 +240,23 @@ describe('Post Service Tests', function() {
     });
 
   });
+
+  it('should return dishes of the user', function(done) {
+    new DishModel({ name: 'pussy', description: 'vagina', pictures: ['whore'], host: testUser._id }).save(function(err, d) {
+      PostService.getDishesByUser({ user: testUser }, function(err, result) {
+        var found = false;
+        for(var i = 0; i < result.length; i++) {
+          if (result[i].name == d.name) {
+            found = true;
+            break;
+          }
+        }
+        assert(found, 'did not find the newly added dish');
+        done();
+      });
+    });
+
+  });
 });
 
 
@@ -323,5 +340,27 @@ describe('Post Events Tests', function(act) {
           done();
         });
     });
+  });
+
+  it('should send back all dishes of the user', function(done) {
+    new DishModel({ name: 'a', description: 'b', pictures: ['c'], host: tidenUser._id }).save(function(err, d) {
+      request(app)
+        .get('/member/dishes')
+        .set('Authorization', 'Bearer ' + accessToken)
+        .expect(200)
+        .end(function(err, res) {
+          var found = false;
+          var result = res.body;
+          for (var i = 0; i < result.length; i++) {
+            if (result[i].name == d.name) {
+              found = true;
+              break;
+            }
+          }
+          assert(found, 'did not find the newly added dish');
+          done();
+        });
+    });
+
   });
 });

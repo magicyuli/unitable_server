@@ -53,7 +53,7 @@ router.route('/register')
 					if (resp && resp.statusCode !== 200) {
 						return res.status(resp.statusCode).send(resp.body);
 					}
-					doc.password = undefined;
+					doc.password = void 0;
 					res.json({ user: doc, tokens: body });
 				});
 			});

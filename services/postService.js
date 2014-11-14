@@ -180,11 +180,19 @@ exports.getPostsByUser = function(data, callback) {
     findGuestPosts();
   }
 };
+
+exports.getDishesByUser = function(data, callback) {
+  if (!data || !data.user) {
+    return callback(new Error('getDishesByUser: user is required'));
+  }
+  DishModel.find({ host: data.user._id }, callback);
+};
+
 /**
  *@author Lee
  */
 exports.guest = function (userId, postId, callback) {
-  PostModel.findOne({_id: postId}, function(err, doc) {
+  PostModel.findOne({_id: postId}, function (err, doc) {
     if (err) {
       callback(err);
       return;
@@ -209,6 +217,6 @@ exports.guest = function (userId, postId, callback) {
       callback(err);
       return;
     }
-    PostModel.update({ _id: postId }, { $push: { guests: userId }}, callback);
+    PostModel.update({_id: postId}, {$push: {guests: userId}}, callback);
   });
 };
