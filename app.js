@@ -8,8 +8,9 @@ var routers = require('./routers');
 app.set('env', process.env.NODE_ENV || 'development');
 app.set('port', process.env.PORT || 8086);
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+//mongodb's doc size limit is 16mb
+app.use(bodyParser.urlencoded({ extended: true, limit: '16mb' }));
+app.use(bodyParser.json({ limit: '16mb' }));
 app.use(morgan(':remote-addr - :remote-user [:date[clf]], :method :url HTTP/:http-version :status, :res[content-length], :response-time ms, :referrer, :user-agent', { "stream": logger.stream }));
 
 app.use(routers.optionsRouter);

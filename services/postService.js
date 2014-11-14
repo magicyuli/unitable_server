@@ -63,7 +63,7 @@ exports.newPost = function(data, callback) {
       if (stop) { return; }
       DishModel.findOneAndUpdate(
         { host: data.user._id, name: d.name },
-        { $set: { description: d.description, name: d.name, host: data.user._id } },
+        { $set: { description: d.description, name: d.name, host: data.user._id, pictures: d.pictures } },
         { upsert: true },
         function(err, doc) {
           if (err) {
