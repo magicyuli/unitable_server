@@ -4,11 +4,15 @@ var configs = require('../config');
 winston.emitErrs = true;
 
 var loggers = {};
+var regularLogPath = process.cwd() + '/logs/logs.log';
+var errorLogPath = process.cwd() + '/logs/errors.log';
+
 
 loggers['others'] = new winston.Logger({
 	transports: [
 		new (winston.transports.File)({
-			filename: configs.regularLogPath, level: 'info',
+			filename: regularLogPath,
+			level: 'info',
 			handleExceptions: false,
 			maxsize: 5242880, //5MB
             maxFiles: 5,
@@ -26,7 +30,8 @@ loggers['others'] = new winston.Logger({
 loggers['error'] = new winston.Logger({
 	transports: [
 		new (winston.transports.File)({
-			filename: configs.errorLogPath, level: 'error',
+			filename: errorLogPath,
+			level: 'error',
 			handleExceptions: true,
 			maxsize: 5242880, //5MB
             maxFiles: 5,
