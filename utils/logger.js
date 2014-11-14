@@ -4,9 +4,10 @@ var configs = require('../config');
 winston.emitErrs = true;
 
 var loggers = {};
+process.chdir(__dirname);
+process.chdir('../');
 var regularLogPath = process.cwd() + '/logs/logs.log';
 var errorLogPath = process.cwd() + '/logs/errors.log';
-
 
 loggers['others'] = new winston.Logger({
 	transports: [
